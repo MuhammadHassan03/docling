@@ -592,6 +592,11 @@ class ConversionResult(ConversionAssets):
     input: InputDocument
     assembled: AssembledUnit = AssembledUnit()
 
+    # Catalog /Lang string and XMP key/values of a PDF, exactly as the backend reports
+    # them (no normalisation). None for other inputs and when the PDF carries neither.
+    pdf_language: Optional[str] = None
+    pdf_xmp_metadata: Optional[dict[str, str]] = None
+
     # PDF bookmark/ToC outline, surfaced from the backend for the heading-hierarchy stage.
     # Private transient plumbing: a Pydantic private attr (not a model field, never serialized);
     # the heading stage resets it to None once consumed.

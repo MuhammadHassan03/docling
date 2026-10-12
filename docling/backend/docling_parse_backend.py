@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Optional, Union
 from docling_core.types.doc import BoundingBox, Size
 from docling_core.types.doc.page import (
     PdfCellRenderingMode,
+    PdfMetaData,
     PdfTextCell,
     SegmentedPdfPage,
     TextCell,
@@ -355,6 +356,20 @@ class ThreadedDoclingParseDocumentBackend(PdfDocumentBackend):
         annotations = self.parser.get_annotations(self.doc_key)
         toc = annotations.table_of_contents if annotations is not None else None
         return extract_outline_from_docling_parse(toc)
+
+    def get_document_language(self) -> Optional[str]:
+        """Return the catalog ``/Lang`` string from the document annotations, as given."""
+        annotations = self.parser.get_annotations(self.doc_key)
+        return annotations.language if annotations is not None else None
+
+    def get_document_xmp_metadata(self) -> Optional[dict[str, str]]:
+        """Return the XMP key/values, parsed as docling-parse's ``get_meta()`` does."""
+        annotations = self.parser.get_annotations(self.doc_key)
+        if annotations is None or annotations.meta_xml is None:
+            return None
+        meta = PdfMetaData(xml=annotations.meta_xml)
+        meta.initialise()
+        return meta.data
 
     def load_page(self, page_no: int) -> PdfPageBackend:
         raise NotImplementedError(

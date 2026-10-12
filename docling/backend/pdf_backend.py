@@ -154,6 +154,14 @@ class PdfDocumentBackend(PaginatedDocumentBackend):
         """
         return []
 
+    def get_document_language(self) -> Optional[str]:
+        """Return the catalog ``/Lang`` string as given, or None when the backend has none."""
+        return None
+
+    def get_document_xmp_metadata(self) -> Optional[dict[str, str]]:
+        """Return the XMP key/values of the document, or None when the backend has none."""
+        return None
+
     @classmethod
     def supported_formats(cls) -> Set[InputFormat]:
         return {InputFormat.PDF}

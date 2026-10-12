@@ -818,6 +818,14 @@ class StandardPdfPipeline(ConvertPipeline):
         assert isinstance(conv_res.input._backend, PdfDocumentBackend)
         backend = conv_res.input._backend
 
+        # Surface the catalog /Lang and XMP metadata while the backend is still open.
+        # Optional metadata: a parser failure here must not fail the conversion.
+        try:
+            conv_res.pdf_language = backend.get_document_language()
+            conv_res.pdf_xmp_metadata = backend.get_document_xmp_metadata()
+        except Exception as exc:
+            _log.debug("Could not read the PDF language and XMP metadata: %s", exc)
+
         # Surface the PDF outline (bookmarks/ToC) for the heading-hierarchy stage, while the
         # backend is still open. Only extracted when bookmark inference is actually enabled.
         hh_opts = self.pipeline_options.heading_hierarchy_options
